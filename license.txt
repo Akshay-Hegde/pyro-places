@@ -1,0 +1,11 @@
+/*
+ * ----------------------------------------------------------------------------
+ * "(A) BEER-WARE LICENSE" (Revision 42½):
+ * <johannes@the.homestead.dk> wrote this file and, where nothing else is
+ * specified, wrote all the other files in this directory as well. As long as
+ * this notice is retained, you can do whatever you want with this stuff. If we
+ * meet some day, and you thought this stuff was worhthwhile, you can buy me a
+ * beer as a kind-hearted thank you.
+ * ~Johannes Lindhart Borresen.
+ * ----------------------------------------------------------------------------
+ */
