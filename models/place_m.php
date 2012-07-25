@@ -19,10 +19,19 @@ class Place_m extends MY_Model
 	 */
 	public function get_all()
 	{
-		$ret = $this->db->order_by('name', 'ASC')
-						->get($this->_table)
+		return $this->db->from('places')
+						->order_by('name', 'ASC')
+						->get()
 						->result();
-		return $ret;
+	}
+
+	public function get($id)
+	{
+		return $this->db->from('places')
+						->where('id', $id)
+						->limit(1)
+						->get()
+						->result();
 	}
 
 	/**

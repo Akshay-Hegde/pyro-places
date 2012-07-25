@@ -9,4 +9,4 @@
 
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-$route['places/(:num)']			= 'places/$1';
+$route['places/(:num)']			= 'places/places/$1';

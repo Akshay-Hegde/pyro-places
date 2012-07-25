@@ -32,13 +32,9 @@ class Places extends Public_Controller
 	 * Single-item view. We don't need anything else atm.
 	 * @param int $id Location id.
 	 */
-	public function view($id)
+	public function index($id)
     {
     	$this->data = $this->place_m->get($id);
-
-    	$this->data->settings->zoom_level = $this->settings_m->get('zoom_level');
-    	$this->data->settings->api_key = $this->settings_m->get('api_key');
-    	$this->data->settings->image_size = $this->settings_m->get('image_size');
 
         $this->template->title($this->module_details['name'])
                        ->build('place_view', $this->data);

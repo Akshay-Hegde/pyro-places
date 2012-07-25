@@ -30,6 +30,7 @@ class Module_Places extends Module {
         parent::__construct();
 
         $this->load->library('session');
+        $this->load->model('settings_m');
         // $this->lang->load('places');
     }
 
@@ -150,51 +151,126 @@ class Module_Places extends Module {
         $kat = $this->insert_location('The White House', 'The White House', 'Because Google is smart.');
         $stad = $this->insert_location('Den Lille Havfrue', 'Den Lille Havfrue', 'Because Google is VERY smart.');
         $skip = $this->insert_location('Institute of Computer Sciences, Aalborg University', 'Selma Lagerløfs Vej 300, Aalborg Øst, Danmark', 'Because I like to get myself on the maps.');
+
+        return true;
     }
 
     private function install_settings()
     {
-        $api_key = array(
-            'slug' => 'api_key',
-            'title' => 'Google Maps API key',
-            'description' => 'Can be obtained from <a href="http://code.google.com/apis/console">Google Code</a>',
-            '`default`' => '',
-            '`value`' => '',
-            'type' => 'text',
-            'is_required' => 0,
-            'is_gui' => 1,
-            'options' => '',
-            'module' => 'places'
-        );
-        $zoom = array(
-            'slug' => 'zoom_level',
-            'title' => 'Default zoom level',
-            'description' => 'The zoom level (1-21) to use by default on displayed google maps.',
-            '`default`' => '16',
-            '`value`' => '16',
-            'type' => 'text',
-            'is_required' => 1,
-            'is_gui' => 1,
-            'options' => '',
-            'module' => 'places'
-        );
-        $size = array(
-            'slug' => 'image_size',
-            'title' => 'Image size',
-            'description' => 'Size of the image to be displayed. Maximum recommended is the default (640x480).',
-            '`default`' => '640x480',
-            '`value`' => '640x480',
-            'type' => 'text',
-            'is_required' => 1,
-            'is_gui' => 1,
-            'options' => '',
-            'module' => 'places',
-        );
+        $success  =$this->settings_m->insert_many(array(
+            array(
+                'slug' => 'places_tag_api_key',
+                'title' => 'Google Maps API key',
+                'description' => 'Can be obtained from <a href="http://code.google.com/apis/console">Google Code</a>',
+                '`default`' => '',
+                '`value`' => '',
+                'type' => 'text',
+                'is_required' => 0,
+                'is_gui' => 1,
+                'options' => '',
+                'module' => 'places',
+            ),
+            array(
+                'slug' => 'places_tag_zoom',
+                'title' => 'Default zoom level',
+                'description' => 'Defines the zoom level of the map, which determines the magnification level of the map. This parameter takes a numerical value corresponding to the zoom level of the region desired.',
+                '`default`' => '16',
+                '`value`' => '16',
+                'type' => 'text',
+                'is_required' => 1,
+                'is_gui' => 1,
+                'options' => '',
+                'module' => 'places',
+            ),
+            array(
+                'slug' => 'places_tag_size',
+                'title' => 'Image size',
+                'description' => 'Defines the rectangular dimensions of the map image. This parameter takes a string of the form {horizontal_value}x{vertical_value}. For example, 500x400 defines a map 500 pixels wide by 400 pixels high. Maps smaller than 180 pixels in width will display a reduced-size Google logo. This parameter is affected by the scale parameter, described below; the final output size is the product of the size and scale values.',
+                '`default`' => '640x480',
+                '`value`' => '640x480',
+                'type' => 'text',
+                'is_required' => 1,
+                'is_gui' => 1,
+                'options' => '',
+                'module' => 'places',
+            ),
+            array(
+                'slug' => 'places_tag_scale',
+                'title' => 'Scale',
+                'description' => 'Affects the number of pixels that are returned. scale=2 returns twice as many pixels as scale=1 while retaining the same coverage area and level of detail (i.e. the contents of the map don\'t change). This is useful when developing for high-resolution displays, or when generating a map for printing. The default value is 1. Accepted values are 2 and 4 (4 is only available to Maps API for Business customers.)',
+                '`default`' => '1',
+                '`value`' => '1',
+                'type' => 'select',
+                'is_required' => 0,
+                'is_gui' => 1,
+                '`options`' => '1=1|2=2|4=4 (Unsupported)',
+                'module' => 'places',
+            ),
+            array(
+                'slug' => 'places_tag_format',
+                'title' => 'Image format',
+                'description' => 'Defines the format of the resulting image. By default, the Static Maps API creates PNG images. There are several possible formats including GIF, JPEG and PNG types. Which format you use depends on how you intend to present the image. JPEG typically provides greater compression, while GIF and PNG provide greater detail.',
+                '`default`' => 'png',
+                '`value`' => 'png',
+                'type' => 'select',
+                'is_required' => 1,
+                'is_gui' => 1,
+                'options' => 'png=PNG|jpeg=JPEG|gif=GIF',
+                'module' => 'places',
+            ),
+            array(
+                'slug' => 'places_tag_maptype',
+                'title' => 'Map type',
+                'description' => 'Defines the type of map to construct. There are several possible maptype values, including roadmap, satellite, hybrid, and terrain.',
+                '`default`' => 'roadmap',
+                '`value`' => 'roadmap',
+                'type' => 'select',
+                'is_required' => 0,
+                'is_gui' => 1,
+                'options' => 'roadmap=Roadmap (default)|satellite=Satellite|terrain=Terrain|hybrid=Hybrid',
+                'module' => 'places',
+            ),
+            array(
+                'slug' => 'places_tag_language',
+                'title' => 'Language',
+                'description' => 'Defines the language to use for display of labels on map tiles. Note that this parameter is only supported for some country tiles; if the specific language requested is not supported for the tile set, then the default language for that tileset will be used.',
+                '`default`' => 'en',
+                '`value`' => 'en',
+                'type' => 'text',
+                'is_required' => 0,
+                'is_gui' => 1,
+                'options' => '',
+                'module' => 'places',
+            ),
+            array(
+                'slug' => 'places_tag_region',
+                'title' => 'Region',
+                'description' => 'Defines the appropriate borders to display, based on geo-political sensitivities. Accepts a region code specified as a two-character ccTLD (\'top-level domain\') value.',
+                '`default`' => '',
+                '`value`' => '',
+                'type' => 'text',
+                'is_required' => 0,
+                'is_gui' => 1,
+                'options' => '',
+                'module' => 'places',
+            ),
+            array(
+                'slug' => 'places_tag_style',
+                'title' => 'Custom Style',
+                'description' => 'Defines a custom style to alter the presentation of a specific feature (road, park, etc.) of the map. This parameter takes feature and element arguments identifying the features to select and a set of style operations to apply to that selection. You may supply multiple styles by adding additional style parameters. ',
+                '`default`' => '',
+                '`value`' => '',
+                'type' => 'text',
+                'is_required' => 0,
+                'is_gui' => 1,
+                'options' => '',
+                'module' => 'places',
+            ),
+        ));
 
-        $this->db->insert('settings', $api_key);
-        $this->db->insert('settings', $zoom);
-        $this->db->insert('settings', $size);
-
+        if (!$success) return false;
+        else return true;
+    // Tags that make no sense when defaulted: visible, markers, center, path, 
     }
 
     /**
@@ -207,15 +283,10 @@ class Module_Places extends Module {
     	// Remove any previous settings.
         $this->db->delete('settings', array('module' => self::MODULE_NAME));
 
-        if (! $this->install_places())
-        {
-            $this->session->set_flashdata('error', lang('table_install_failed'));
-            return false;
-        }
-
-        $this->insert_sample_data();
-        $this->install_settings();
-
+        if (! $this->install_places()) die("Table install failed.");
+        if (! $this->insert_sample_data()) die ("Sample data could not be inserted.");
+        if (! $this->install_settings()) die ("Failed to install settings.");
+        
         return true;
     }
 

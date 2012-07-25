@@ -1,116 +1,154 @@
 <?php 
 
 /**
- * This module was built specifically with Danish volleyball leagues in mind,
- * but the abstraction should be distant enough to allow for practically any
- * sport that has a generic tournament structure, different leagues (or series,
- * or .... you know), players, coaches and a team description.
- *
- * @author Johannes L. Borresen
- * @website http://the.homestead.dk
- * @package sports
- **/
+ * This module allows for the simple display of maps from Google's API. It
+ * allows for run-time tag display (for one-offs) as well as storing locations
+ * in more long-term scenarios for easy retrieval.
+ * @package places
+ */
 
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Plugin part. It's very limited in what I could reasonably accomplish, and 
- * I'm thinking if maybe separate modules for each general model/controller
- * is better.
+ * Plugin part. The philosophy is that I want to offer up everything Google
+ * Maps Static API does while being sensible about the structure. Thus you will
+ * often find that you must wrap another PyroCMS tag around these tags - one
+ * clear example is the case with linking to a map. places:anchor does not
+ * exist because url:anchor segments="URL" would do this just fine.
  * @package sports
  */
-class Plugin_Sports extends Plugin
+class Plugin_Places extends Plugin
 {
-	/**
-	 * Item List
-	 * Usage:
-	 * 
-	 * {{ sample:items limit="5" order="asc" }}
-	 *      {{ id }} {{ name }} {{ slug }}
-	 * {{ /sample:items }}
-	 *
-	 * @return	array
-	 */
-	public function items()
-	{
-		$limit = $this->attribute('limit');
-		$order = $this->attribute('order');
-		
-		return $this->db->order_by('name', $order)
-						->limit($limit)
-						->get('sample_items')
-						->result_array();
-	}
-	
-	/**
-	 * Full team list (careful on those db resources, dude).
-	 *
-	 * Although the usage of tag pairs insinuates looping behaviour, your will
-	 * actually only get one hit. This seems like it's such a common occurrence
-	 * that we should have something proper for it.
-	 * Use the ids to pull from leagues, training times and the internal
-	 * PyroCMS users model.
-	 *
-	 * Usage:
-	 * {{ sports:teams limit="5" order_by="name" order="asc" }}
-	 *		{{ id }} {{ name }} {{ league_id }} {{ head_coach_id }} {{ description }}
-	 * {{ /sports:teams }}
-	 **/
-	 public function teams()
-	 {
 
-	 	return $this->db->order_by('name', 'ASC')
-	 					->get('sports_teams')
-	 			        ->result();
-	 }
-	
 	/**
-	 * Retrieves a single team's data.
-	 *
-	 * Usage (partial):
-	 * {{ sports:team_single id="3" }}
-	 *		Team: {{ name }}
-	 *		League: {{ sports:league_name id={league} }}
-	 *		Head coach: {{ user:display_name id={head_coach} }}
-	 * {{ /sports:team_single }}
-	 **/
-	public function team_single()
+	 * The base Google API url. Should not be changed, but it's nice to have it
+	 * somewhere by itself.
+	 */
+	public $base_url = 'http://maps.googleapis.com/maps/api/staticmap';
+
+	public function __construct()
 	{
-		$id = $this->attribute('id');
-		
-		return $this->db
-						->get_where('sports_teams', array('id' => $id))
-						->result_array();
+		// parent::__construct();
+		$this->load->model(array(
+			'settings_m',
+			'place_m'
+		));
 	}
 
 	/**
-	 * Function for the league tag.
-	 * Usage:
-	 * {{ sports:league id="<id>" [get="<field>"] }}
-	 * Given the monolithic structure of the module, I can't simply do
-	 * sports:league:field id="" - yet.
-	 * @return The value of the requested field in the referenced league.
+	 * Constructs a full Google Maps URL from the attributes passed and module
+	 * settings saved as defaults.
+	 * @return string
 	 */
-	public function league()
+	protected function construct_url()
 	{
-		$data = $this->db->from('sports_leagues')
-						 ->where('id', $this->attribute('id'))
-						 ->get()
-						 ->row_array();
+		$url = $this->base_url . '?';
 
-		return $data[$this->attribute('get')];
+		$url_segments = array('sensor' => 'false');
+
+		$location = $this->get_place();
+
+		// If a location was passed through attributes, one set of conditions pass.
+		if (isset($location))
+		{
+			// If a center was also passed, the location's address becomes a marker.
+			if ($this->attribute('center'))
+				$seg = 'markers';
+			else
+				$seg = 'center';
+
+			// We place the address in whichever of the two we decided on.
+			$url_segments[$seg] = $location->address;
+
+			// If markers were defined. If the address was a marker, append the others.
+			// If the address was the center, set the markers.
+			if ($this->attribute('markers'))
+			{
+				switch($seg)
+				{
+					case 'markers':
+					{
+						// Append markers, set possible center.
+						$url_segments['markers'] .= '|'.$this->attribute('markers', '');
+						break;
+					}
+					case 'center':
+					{
+						// Set markers.
+						$url_segments['markers'] = $this->attribute('markers');
+						break;
+					}
+				}
+			}
+		}
+		else // If no valid location was passed, we check that either markers or center was set.
+		{
+			// At least one of either marker or center must be set.
+			if (!($this->attribute('markers') or $this->attribute('center')))
+				return "<pre>Plugin error: either center or markers must be added as an attribute.</pre>"; // Die instantly if missing key.
+			else
+			{
+				if ($add = $this->attribute('markers'))
+					$url_segments['markers'] = $add;
+				if ($add2 = $this->attribute('center'))
+					$url_segments['center'] = $add2;
+			}
+		}
+
+		// Everything else is (in our plugin) either optional or pre-defined in
+		// the settings.
+		$settings = $this->settings_m->get_many_by(array('module' => 'places'));
+
+		foreach($settings as $setting)
+		{
+			// Our slug conversion here is to easily 1-to-1 map the API parameters
+			// to the tag attributes.
+			if (empty($setting->value)) continue;
+			$slug = substr($setting->slug, strlen('places_tag_'));
+			$new_val = ($val = $this->attribute($slug) ? $val : $setting->value);
+			$url_segments[$slug] = $new_val;
+		}
+
+		// Hardcode add sensor.
+		$url_segments['sensor'] = 'false';
+
+		foreach($url_segments as $uk=>$uv)
+		{
+			// $url = $url.urlencode($uk).'='.urlencode($uv).'&';
+			$url .= htmlentities("$uk=$uv&");
+		}
+
+		return $url;
 	}
 
-	/**
-	 * Catch-all for unknown tags.
-	 * @param string $name Name of the function that was attampted to be
-	 * called.
-	 * @param array $arguments  Array of function arguments.
-	 * @return null
-	 */
-	public function _call($name, $arguments)
+	protected function get_place()
 	{
-		var_dump($name, $arguments);die();
+		$id = -1;
+
+		$id = $this->attribute('id', $this->uri->segment($this->attribute('segment')));
+
+		// If neither id or segment was passed, we cannot get a location.
+		if (!$id) return null;
+		else
+		{
+			$p = $this->place_m->get($id);
+			return $p[0];
+		}
+	}
+
+	public function url()
+	{
+		return $this->construct_url();
+	}
+
+	public function anchor()
+	{
+		$title = $this->attribute('title', '');
+		$class = $this->attribute('class', '');
+
+		$class = !empty($class) ? 'class="'.$class.'"' : '';
+
+		return anchor($this->construct_url(), $title, $class);
 	}
 }
 
