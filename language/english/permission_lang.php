@@ -1,4 +1,4 @@
-<? defined('BASEPATH') or exit('No direct script access allowed');
+<?phpdefined('BASEPATH') or exit('No direct script access allowed');
 
 /**
  * This module allows for the simple display of maps from Google's API. It

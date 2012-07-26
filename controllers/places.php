@@ -1,5 +1,4 @@
-<?
-
+<?php
 /**
  * This module allows for the simple display of maps from Google's API. It
  * allows for run-time tag display (for one-offs) as well as storing locations

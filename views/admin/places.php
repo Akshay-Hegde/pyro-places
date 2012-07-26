@@ -1,61 +1,60 @@
 <section class="title">
-	<h4><? echo lang('places:places'); ?></h4>
+	<h4><?phpecho lang('places:places'); ?></h4>
 </section>
 
 <section class="item">
-	<? echo form_open('admin/places/delete');?>
+	<?phpecho form_open('admin/places/delete');?>
 	
-	<? if (!empty($places)): ?>
+	<?phpif (!empty($places)): ?>
 	
 		<table>
 			<thead>
 			    <!-- Header row -->
 				<tr>
-					<th><? echo form_checkbox(array('name' => 'action_to_all', 'class' => 'check-all'));?></th>
-                    <th><? echo lang('places:id'); ?></th>
-					<th><? echo lang('places:name'); ?></th>
-					<th><? echo lang('places:address'); ?></th>
+					<th><?phpecho form_checkbox(array('name' => 'action_to_all', 'class' => 'check-all'));?></th>
+                    <th><?phpecho lang('places:id'); ?></th>
+					<th><?phpecho lang('places:name'); ?></th>
+					<th><?phpecho lang('places:address'); ?></th>
 					<th></th>
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
 					<td colspan="3">
-						<div class="inner"><? $this->load->view('admin/partials/pagination'); ?></div>
+						<div class="inner"><?php$this->load->view('admin/partials/pagination'); ?></div>
 					</td>
 				</tr>
 			</tfoot>
 			<tbody>
-				<?
-				    // Loop through each team here.
+				<?php				    // Loop through each team here.
 				    foreach( $places as $location ):
 			    ?>
 				<tr>
-					<td><? echo form_checkbox('action_to[]', $location->id); ?></td>
-					<td><? echo $location->id; ?></td>
-					<td><? echo $location->name; ?></td>
-					<td><? echo $location->address; ?></td>
+					<td><?phpecho form_checkbox('action_to[]', $location->id); ?></td>
+					<td><?phpecho $location->id; ?></td>
+					<td><?phpecho $location->name; ?></td>
+					<td><?phpecho $location->address; ?></td>
 					<td class="actions">
-						<?=
+						<?php echo
 						anchor('http://maps.googleapis.com/maps/api/staticmap?'.$default_params.'&
 							center='.$location->address.'&
 							markers='.$location->address,
 							lang('global:view'), 'class="button" target="_blank"') ?>
-						<? if ($can_edit) echo anchor('admin/places/edit/'.$location->id, lang('global:edit'), 'class="button"'); ?>
-						<? if ($can_delete) echo anchor('admin/places/delete/'.$location->id, 	lang('global:delete'), array('class'=>'button')); ?>
+						<?phpif ($can_edit) echo anchor('admin/places/edit/'.$location->id, lang('global:edit'), 'class="button"'); ?>
+						<?phpif ($can_delete) echo anchor('admin/places/delete/'.$location->id, 	lang('global:delete'), array('class'=>'button')); ?>
 					</td>
 				</tr>
-				<? endforeach; ?>
+				<?phpendforeach; ?>
 			</tbody>
 		</table>
 		
 		<div class="table_action_buttons">
-			<? $this->load->view('admin/partials/buttons', array('buttons' => array('delete'))); ?>
+			<?php$this->load->view('admin/partials/buttons', array('buttons' => array('delete'))); ?>
 		</div>
 		
-	<? else: ?>
-		<div class="no_data"><? echo lang('sports:no_items'); ?></div>
-	<? endif;?>
+	<?phpelse: ?>
+		<div class="no_data"><?phpecho lang('sports:no_items'); ?></div>
+	<?phpendif;?>
 	
-	<? echo form_close(); ?>
+	<?phpecho form_close(); ?>
 </section>
