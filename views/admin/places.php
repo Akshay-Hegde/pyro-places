@@ -36,13 +36,13 @@
 					<td><? echo $location->name; ?></td>
 					<td><? echo $location->address; ?></td>
 					<td class="actions">
-						<? echo
+						<?=
 						anchor('http://maps.googleapis.com/maps/api/staticmap?'.$default_params.'&
 							center='.$location->address.'&
 							markers='.$location->address,
-							lang('global:view'), 'class="button" target="_blank"').' '.
-						anchor('admin/places/edit/'.$location->id, lang('global:edit'), 'class="button"').' '.
-						anchor('admin/places/delete/'.$location->id, 	lang('global:delete'), array('class'=>'button')); ?>
+							lang('global:view'), 'class="button" target="_blank"') ?>
+						<? if ($can_edit) echo anchor('admin/places/edit/'.$location->id, lang('global:edit'), 'class="button"'); ?>
+						<? if ($can_delete) echo anchor('admin/places/delete/'.$location->id, 	lang('global:delete'), array('class'=>'button')); ?>
 					</td>
 				</tr>
 				<? endforeach; ?>

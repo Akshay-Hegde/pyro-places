@@ -7,6 +7,6 @@
  * @package places
  */
 
- $lang['places.create_location']	=	'Create a location';
- $lang['places.edit_location']		=	'Edit a location';
- $lang['places.delete_location']	=	'Delete a location';
+ $lang['places.role_create_location']	=	'Create a location';
+ $lang['places.role_edit_location']		=	'Edit a location';
+ $lang['places.role_delete_location']	=	'Delete a location';

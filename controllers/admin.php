@@ -60,11 +60,8 @@ class Admin extends Admin_Controller
         // Remove first ampersand.
         $this->data->default_params = substr($this->data->default_params, 1);
 
-        /*
-        $this->data->settings->zoom_level = $this->settings_m->get('zoom_level');
-        $this->data->settings->api_key = $this->settings_m->get('api_key');
-        $this->data->settings->image_size = $this->settings_m->get('image_size');
-        */
+        $this->data->can_edit = isset($this->permissions['places']['edit_location']) ? true : false;
+        $this->data->can_delete = isset($this->permissions['places']['delete_location']) ? true : false;
 	}
 
     protected function get_defaults()
@@ -102,6 +99,14 @@ class Admin extends Admin_Controller
      */
     public function create()
     {
+        // Check permissions
+        if (!isset($this->permissions['places']) or
+            !isset($this->permissions['places']['create_location']))
+        {
+            $this->session->set_flashdata('error', lang('places:create_not_allowed'));
+            redirect('admin/places');
+        }
+
         // Secure values.
         $this->form_validation->set_rules($this->item_validation_rules);
 

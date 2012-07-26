@@ -14,3 +14,7 @@ $lang['places:create']		=	'Create location';
 $lang['places:name']		=	'Name';
 $lang['places:address']		=	'Address';
 $lang['places:description']	=	'Description';
+
+$lang['places:create_not_allowed'] = 'You don\' have the permmissions to create a place.';
+$lang['places:delete_not_allowed'] = 'You don\' have the permmissions to create a place.';
+$lang['places:edit_not_allowed'] = 'You don\' have the permmissions to create a place.';
