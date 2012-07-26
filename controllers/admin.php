@@ -54,7 +54,7 @@ class Admin extends Admin_Controller
 	}
 
 	/**
-	 * Displays all known places, allowing for CRUD of place_m.
+	 * Displays all known places, allowing for some CRUD of place_m.
 	 */
 	public function index()
 	{
@@ -88,7 +88,7 @@ class Admin extends Admin_Controller
                 else
                 {
                     $this->session->set_flashdata('error', lang('general_error_label'));
-                    redirect('admin/places/create');
+                    redirect('admin/place_create');
                 }
             }
         }
@@ -134,19 +134,18 @@ class Admin extends Admin_Controller
             else
             {
                 $this->session->set_flashdata('error', lang('general_error_label'));
-                redirect('admin/places/create');
+                redirect('admin/place_create');
             }
         }
 
-        // Build the view using sports/views/admin/team_create
+        // Build the view using places/views/admin/place_create
         $this->template->title($this->module_details['name'], lang('global:add'))
                        ->build('admin/place_create', $this->data);
     }
 
     /**
-     * Deletes a location without any large amount of fanfare.
-     * @todo Figure out how to handle orphaned schedules.
-     * @param int $id Id of the location to delete.
+     * Deletes a places entry without any large amount of fanfare.
+     * @param int $id Id of the place to delete.
      * @return ?
      */
     public function delete($id)

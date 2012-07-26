@@ -25,13 +25,15 @@ class Module_Places extends Module {
      */
     const MODULE_NAME='places';
 
+    /**
+     * We load up the settings model to have insert_many for easy, efficient
+     * insertion of settings. 
+     */
     public function __construct()
     {
         parent::__construct();
 
-        $this->load->library('session');
         $this->load->model('settings_m');
-        // $this->lang->load('places');
     }
 
     /**
@@ -143,7 +145,6 @@ class Module_Places extends Module {
     /**
      * Installs a bunch of sample data to work with.
      * @return boolean True on success, false otherwise.
-     * @todo Before a true public release, this should be a bit more sanitised.
      */
     private function insert_sample_data()
     {
@@ -155,6 +156,11 @@ class Module_Places extends Module {
         return true;
     }
 
+    /**
+     * Inserts all the various settings into th CP. If you want to add a new possible
+     * parameter to the Google Maps tags, add a setting with a slug prefixed with
+     * 'places_tag_' for automatic detection.
+     */
     private function install_settings()
     {
         $success  =$this->settings_m->insert_many(array(
@@ -329,6 +335,6 @@ class Module_Places extends Module {
     public function help()
     {
         // Return a string containing help info
-        return "Here you can enter HTML with paragrpah tags or whatever you like";
+        return "See the Github repository at http://www.github.com/Tellus/pyro-places" for usage information.";
     }
 }

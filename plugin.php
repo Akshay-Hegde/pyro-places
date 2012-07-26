@@ -26,6 +26,11 @@ class Plugin_Places extends Plugin
 	 */
 	public $base_url = 'http://maps.googleapis.com/maps/api/staticmap';
 
+    /**
+     * We need to read settings and locations when reacting to tags. The prior
+     * because it contains sitewide defaults, the latter to react to places
+     * tags that refer to places by URL segments or direct primary keys.
+     */
 	public function __construct()
 	{
 		// parent::__construct();
@@ -33,6 +38,8 @@ class Plugin_Places extends Plugin
 			'settings_m',
 			'place_m'
 		));
+
+        $this->load->helper('html');
 	}
 
 	/**
@@ -121,11 +128,17 @@ class Plugin_Places extends Plugin
 		return $url;
 	}
 
+    /**
+     * Determines if a place ID was passed directly (id attribute) or indirectly
+     * (segment attribute). If so, extract the id.
+     */
 	protected function get_place()
 	{
-		$id = -1;
+        if ($id = $this->attribute('id') and
+            $segment = $this->uri->segment($this->attribute('segment')))
+                return "Plugin error: id and segment cannot be combined.";
 
-		$id = $this->attribute('id', $this->uri->segment($this->attribute('segment')));
+        $id = $id ? : $id : $segment;
 
 		// If neither id or segment was passed, we cannot get a location.
 		if (!$id) return null;
@@ -136,11 +149,26 @@ class Plugin_Places extends Plugin
 		}
 	}
 
+    /**
+     * Returns an URL for a Google Maps API call/image.
+     * Usage:
+     * {{ places:url (id="<id>"|segment="<segment>"|markers="<marker_1>|<marker_n>"|center="<center">) [, opt=val]
+     * At MOST one of id or segment.
+     * If neither id or segment is passed, at LEAST one of markers or center must be
+     * passed.
+     * @return string
+     */
 	public function url()
 	{
 		return $this->construct_url();
 	}
 
+    /**
+     * Returns an anchor element, <a>, that links to a Google Map. See url() in this
+     * file for a list of places-specific attributes. Furthermore, this function
+     * is otherwise a direct proxy to url:anchor - pass title and class into this
+     * tag as you would that tag.
+     */
 	public function anchor()
 	{
 		$title = $this->attribute('title', '');
@@ -150,6 +178,20 @@ class Plugin_Places extends Plugin
 
 		return anchor($this->construct_url(), $title, $class);
 	}
+
+    /**
+     * Returns an image element, <img>, where the source has been set to the places
+     * attributes passed. You may add a class via the class attribute.
+     */
+    public function image()
+    {
+        $class = $this->attribute('class', '');
+
+        return img(array(
+            'src' => $this->url(),
+            'class' => !empty($class) ? $class : '',
+        ));
+    }
 }
 
 /* End of file plugin.php */

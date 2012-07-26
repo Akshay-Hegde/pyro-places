@@ -25,6 +25,7 @@ class Place_m extends MY_Model
 						->result();
 	}
 
+    /* Phase out attempt.
 	public function get($id)
 	{
 		return $this->db->from('places')
@@ -33,6 +34,7 @@ class Place_m extends MY_Model
 						->get()
 						->result();
 	}
+    */
 
 	/**
 	 * Pretty much a stub for Create, but it allows
