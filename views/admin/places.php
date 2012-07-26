@@ -5,7 +5,7 @@
 <section class="item">
 	<?php echo form_open('admin/places/delete');?>
 	
-	<?phpif (!empty($places)): ?>
+	<?php if (!empty($places)): ?>
 	
 		<table>
 			<thead>
@@ -21,7 +21,7 @@
 			<tfoot>
 				<tr>
 					<td colspan="3">
-						<div class="inner"><?php$this->load->view('admin/partials/pagination'); ?></div>
+						<div class="inner"><?php $this->load->view('admin/partials/pagination'); ?></div>
 					</td>
 				</tr>
 			</tfoot>
@@ -40,21 +40,21 @@
 							center='.$location->address.'&
 							markers='.$location->address,
 							lang('global:view'), 'class="button" target="_blank"') ?>
-						<?phpif ($can_edit) echo anchor('admin/places/edit/'.$location->id, lang('global:edit'), 'class="button"'); ?>
-						<?phpif ($can_delete) echo anchor('admin/places/delete/'.$location->id, 	lang('global:delete'), array('class'=>'button')); ?>
+						<?php if ($can_edit) echo anchor('admin/places/edit/'.$location->id, lang('global:edit'), 'class="button"'); ?>
+						<?php if ($can_delete) echo anchor('admin/places/delete/'.$location->id, 	lang('global:delete'), array('class'=>'button')); ?>
 					</td>
 				</tr>
-				<?phpendforeach; ?>
+				<?php endforeach; ?>
 			</tbody>
 		</table>
 		
 		<div class="table_action_buttons">
-			<?php$this->load->view('admin/partials/buttons', array('buttons' => array('delete'))); ?>
+			<?php $this->load->view('admin/partials/buttons', array('buttons' => array('delete'))); ?>
 		</div>
 		
-	<?phpelse: ?>
+	<?php else: ?>
 		<div class="no_data"><?php echo lang('sports:no_items'); ?></div>
-	<?phpendif;?>
+	<?php endif;?>
 	
 	<?php echo form_close(); ?>
 </section>
