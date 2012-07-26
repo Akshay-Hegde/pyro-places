@@ -335,6 +335,6 @@ class Module_Places extends Module {
     public function help()
     {
         // Return a string containing help info
-        return "See the Github repository at http://www.github.com/Tellus/pyro-places" for usage information.";
+        return "See the Github repository at http://www.github.com/Tellus/pyro-places for usage information.";
     }
 }

@@ -48,10 +48,42 @@ class Admin extends Admin_Controller
                 'rules' => 'trim|max_length[100]|is_unique[places.address'),
         );
 
+        $this->data->settings = $this->settings_m->get_all();
+        $this->data->default_params = "";
+
+        $default = $this->get_defaults();
+        // Urlify
+        foreach($default as $set_n=>$set_v)
+        {
+            $this->data->default_params .= "&$set_n=$set_v";
+        }
+        // Remove first ampersand.
+        $this->data->default_params = substr($this->data->default_params, 1);
+
+        /*
         $this->data->settings->zoom_level = $this->settings_m->get('zoom_level');
         $this->data->settings->api_key = $this->settings_m->get('api_key');
         $this->data->settings->image_size = $this->settings_m->get('image_size');
+        */
 	}
+
+    protected function get_defaults()
+    {
+        $dp = array();
+
+        foreach ($this->settings_m->get_many_by(array('module' => 'places')) as $setting)
+        {
+            if (!empty($setting->value))
+            {
+                $dp[substr($setting->slug, strlen('places_tag_'))] = $setting->value;
+            }
+        }
+
+        // Sensor is always false for these pages.
+        $dp['sensor'] = 'false';
+
+        return $dp;
+    }
 
 	/**
 	 * Displays all known places, allowing for some CRUD of place_m.

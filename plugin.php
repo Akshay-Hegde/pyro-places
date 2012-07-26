@@ -134,19 +134,26 @@ class Plugin_Places extends Plugin
      */
 	protected function get_place()
 	{
-        if ($id = $this->attribute('id') and
-            $segment = $this->uri->segment($this->attribute('segment')))
-                return "Plugin error: id and segment cannot be combined.";
 
-        $id = $id ? : $id : $segment;
+        $id = $this->attribute('id', '');
+        $seg = $this->attribute('segment', '');
+
+        if (!empty($id))
+        {
+        	// Ok
+        }
+        elseif (!empty($seg))
+        {
+        	$id = $this->uri->segment($seg);
+        }
+        else
+        {
+        	return null;
+        }
 
 		// If neither id or segment was passed, we cannot get a location.
-		if (!$id) return null;
-		else
-		{
-			$p = $this->place_m->get($id);
-			return $p[0];
-		}
+		
+		return $this->place_m->get($id);
 	}
 
     /**

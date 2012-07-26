@@ -37,13 +37,10 @@
 					<td><? echo $location->address; ?></td>
 					<td class="actions">
 						<? echo
-						anchor('http://maps.googleapis.com/maps/api/staticmap?
+						anchor('http://maps.googleapis.com/maps/api/staticmap?'.$default_params.'&
 							center='.$location->address.'&
-							markers='.$location->address.'&
-							zoom='.$settings->zoom_level->value.'&
-							size='.$settings->image_size->value.'&
-							sensor=false&
-							key='.$settings->api_key->value, lang('global:view'), 'class="button" target="_blank"').' '.
+							markers='.$location->address,
+							lang('global:view'), 'class="button" target="_blank"').' '.
 						anchor('admin/places/edit/'.$location->id, lang('global:edit'), 'class="button"').' '.
 						anchor('admin/places/delete/'.$location->id, 	lang('global:delete'), array('class'=>'button')); ?>
 					</td>
